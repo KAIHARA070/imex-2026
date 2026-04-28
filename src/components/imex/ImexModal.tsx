@@ -57,7 +57,14 @@ export default function ImexModal({ open, panelId, editItem, onClose }: Props) {
 
   async function doSubmit() {
     if (!tajuk) {
-      Swal.fire({ icon: 'warning', title: 'Pilih Projek', text: 'Sila pilih tajuk projek terlebih dahulu.', background: '#13131a', color: '#f0f0f4', confirmButtonColor: '#7c3aed' });
+      Swal.fire({ 
+        icon: 'warning', 
+        title: 'Pilih Projek', 
+        text: 'Sila pilih tajuk projek terlebih dahulu.', 
+        background: '#13131a', 
+        color: '#f0f0f4', 
+        confirmButtonColor: '#8b5cf6' 
+      });
       return;
     }
     const { sumP, sumS, sumI, total, pct } = calcScores(scores);
@@ -69,9 +76,25 @@ export default function ImexModal({ open, panelId, editItem, onClose }: Props) {
     try {
       await saveImex.mutateAsync({ payload, isEdit, id: editItem?.id });
       onClose();
-      Swal.fire({ icon: 'success', title: isEdit ? 'Dikemaskini!' : 'Disimpan!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, background: '#13131a', color: '#f0f0f4' });
+      Swal.fire({ 
+        icon: 'success', 
+        title: isEdit ? 'Dikemaskini!' : 'Disimpan!', 
+        toast: true, 
+        position: 'top-end', 
+        showConfirmButton: false, 
+        timer: 2000, 
+        background: '#13131a', 
+        color: '#f0f0f4' 
+      });
     } catch (err: any) {
-      Swal.fire({ icon: 'error', title: 'Gagal', text: err.message, background: '#13131a', color: '#f0f0f4', confirmButtonColor: '#7c3aed' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Gagal', 
+        text: err.message, 
+        background: '#13131a', 
+        color: '#f0f0f4', 
+        confirmButtonColor: '#8b5cf6' 
+      });
     }
   }
 
@@ -83,32 +106,25 @@ export default function ImexModal({ open, panelId, editItem, onClose }: Props) {
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-box slide-up">
-        {/* Drag Handle (mobile only) */}
         <div className="modal-drag-handle" />
 
-        {/* Header */}
         <div className="modal-header">
           <div>
-            <p style={{ fontWeight: 700, fontSize: 16 }}>
-              {isEdit ? '✏️ Kemaskini' : '📝 Borang Penilaian'}
-            </p>
-            <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700 }}>
+              {isEdit ? 'Kemaskini Penilaian' : 'Borang Penilaian Baru'}
+            </h2>
+            <p style={{ fontSize: '12px', color: 'var(--muted)' }}>
               {PANEL_SHORT[panelId]} • Skala 1–5
             </p>
           </div>
-          <button
-            type="button" onClick={onClose}
-            style={{ padding: 8, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-          >
-            <X size={18} />
+          <button type="button" onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--muted)', cursor: 'pointer' }}>
+            <X size={24} />
           </button>
         </div>
 
-        {/* Body */}
         <div className="modal-body">
-          {/* Project Select */}
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ marginBottom: '10px' }}>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
               Tajuk Projek FYP
             </label>
             <div style={{ position: 'relative' }}>
@@ -116,62 +132,52 @@ export default function ImexModal({ open, panelId, editItem, onClose }: Props) {
                 value={tajuk}
                 onChange={e => setTajuk(e.target.value)}
                 style={{
-                  width: '100%', padding: '12px 40px 12px 14px',
-                  borderRadius: 10, border: `1px solid ${tajuk ? 'var(--primary)' : 'var(--border)'}`,
-                  background: 'rgba(255,255,255,0.04)', color: 'var(--text)',
-                  fontSize: 14, fontFamily: 'inherit', cursor: 'pointer',
-                  appearance: 'none', outline: 'none',
+                  width: '100%',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg3)',
+                  color: '#fff',
+                  fontSize: '14px',
+                  appearance: 'none'
                 }}
               >
                 <option value="">— Pilih Projek FYP —</option>
                 {PROJECT_LIST.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
-              <ChevronDown size={16} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', pointerEvents: 'none' }} />
+              <ChevronDown size={18} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--muted)' }} />
             </div>
           </div>
 
-          {/* Score Sections */}
           <ScoreSection title="A. Persembahan" maxScore={MAX_SCORES.persembahan} fields={IMEX_SCHEMA.persembahan} scores={scores} onChange={handleScoreChange} currentTotal={sumP} />
           <ScoreSection title="B. Semangat Berpasukan" maxScore={MAX_SCORES.semangat} fields={IMEX_SCHEMA.semangat} scores={scores} onChange={handleScoreChange} currentTotal={sumS} />
           <ScoreSection title="C. Idea Boleh Dipasarkan" maxScore={MAX_SCORES.idea} fields={IMEX_SCHEMA.idea} scores={scores} onChange={handleScoreChange} currentTotal={sumI} />
         </div>
 
-        {/* Footer */}
         <div className="modal-footer">
-          {/* Score Summary */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: 'var(--muted)' }}>Jumlah Keseluruhan</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary)' }}>{total} / {MAX_SCORES.keseluruhan}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: '12px', color: 'var(--muted)' }}>Jumlah Keseluruhan</p>
+                <p style={{ fontSize: '20px', fontWeight: 800, color: 'var(--primary)' }}>{total} / {MAX_SCORES.keseluruhan}</p>
               </div>
-              <div className="progress-track" style={{ height: 8 }}>
-                <div className="progress-fill" style={{ width: `${totalPct}%` }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                <span style={{ fontSize: 11, color: 'var(--muted)' }}>
-                  P:{sumP} • S:{sumS} • I:{sumI}
-                </span>
-                <span style={{ fontSize: 13, fontWeight: 700 }}>{pct}%</span>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '12px', color: 'var(--muted)' }}>Peratusan</p>
+                <p style={{ fontSize: '20px', fontWeight: 800 }}>{pct}%</p>
               </div>
             </div>
-          </div>
+            
+            <div className="progress-track" style={{ height: '10px' }}>
+              <div className="progress-fill" style={{ width: `${totalPct}%` }} />
+            </div>
 
-          {/* Buttons */}
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button type="button" onClick={onClose} className="btn-ghost" style={{ flex: 1, justifyContent: 'center' }}>
-              Batal
-            </button>
-            <button
-              type="button"
-              onClick={doSubmit}
-              disabled={saveImex.isPending}
-              className="btn-primary"
-              style={{ flex: 2, justifyContent: 'center' }}
-            >
-              <Send size={15} />
-              {saveImex.isPending ? 'Menyimpan...' : 'Hantar Penilaian'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button type="button" onClick={onClose} className="btn-ghost" style={{ flex: 1 }}>Batal</button>
+              <button type="button" onClick={doSubmit} disabled={saveImex.isPending} className="btn-primary" style={{ flex: 2 }}>
+                <Send size={18} />
+                {saveImex.isPending ? 'Menyimpan...' : 'Hantar Penilaian'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
