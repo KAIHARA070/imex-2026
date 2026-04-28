@@ -31,8 +31,23 @@ export default function RankingPage() {
     </div>
   );
 
+  const handlePrint = () => { window.print(); };
+  const printGroup = () => {
+    const tableHtml = document.querySelector('.data-table')?.outerHTML;
+    if (!tableHtml) return;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Ranking PDF</title><style>${document.querySelector('style')?.innerHTML || ''}</style></head><body>${tableHtml}</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
   return (
     <div className="page-content fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Print Button */}
+      <button onClick={handlePrint} className="btn-primary no-print" style={{ alignSelf: "flex-end", marginBottom: 10 }}>
+        Cetak PDF
+      </button>
       {/* Header Card */}
       <div className="glass-card" style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
         <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
