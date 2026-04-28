@@ -21,7 +21,7 @@ export default function Topbar() {
         <span style={{ fontSize: 20 }}>{emoji}</span>
         <div>
           <p style={{ fontWeight: 700, fontSize: 15, lineHeight: 1.2 }}>{text}</p>
-          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Projek FYP PPU IKM Besut</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>IMEX TVETMARA Besut</p>
         </div>
       </div>
 

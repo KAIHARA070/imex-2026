@@ -6,7 +6,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Sistem Penilaian IMEX 2026',
-  description: 'Sistem Penilaian Projek FYP PPU IKM Besut',
+  description: 'Sistem Penilaian Projek IMEX TVETMARA Besut',
 };
 
 export const viewport: Viewport = {

@@ -26,7 +26,7 @@ export default function Sidebar() {
             </div>
             <div>
               <p style={{ fontWeight: 800, fontSize: 15, lineHeight: 1.2 }}>IMEX 2026</p>
-              <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>Sistem Penilaian FYP</p>
+              <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>Sistem Penilaian IMEX TVETMARA Besut</p>
             </div>
           </div>
         </div>
