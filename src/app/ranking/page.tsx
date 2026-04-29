@@ -45,8 +45,8 @@ export default function RankingPage() {
     .map(g => ({ tajuk: g.tajuk, purata: getActiveTabMarkah(g) / g.count, jumlah_panel: g.count }))
     .sort((a, b) => b.purata - a.purata);
 
-  const medals = ['🥇', '🥈', '🥉'];
-  const medalColors = ['#f59e0b', '#9ca3af', '#cd7c3a'];
+  const medals = ['🥇', '🥈'];
+  const medalColors = ['#f59e0b', '#9ca3af'];
   const pctColor = (p: number) => p >= 80 ? 'var(--success)' : p >= 60 ? '#60a5fa' : p >= 40 ? '#f59e0b' : 'var(--danger)';
 
   if (isLoading) return (
@@ -224,10 +224,10 @@ export default function RankingPage() {
             ))}
           </div>
 
-          {/* Top 3 Podium */}
+          {/* Top 2 Podium */}
           {ranking.length >= 1 && (
-            <div style={{ display: 'grid', gridTemplateColumns: ranking.length >= 3 ? 'repeat(3, 1fr)' : `repeat(${ranking.length}, 1fr)`, gap: 12 }}>
-              {ranking.slice(0, 3).map((item, i) => (
+            <div style={{ display: 'grid', gridTemplateColumns: ranking.length >= 2 ? 'repeat(2, 1fr)' : `repeat(${ranking.length}, 1fr)`, gap: 12 }}>
+              {ranking.slice(0, 2).map((item, i) => (
                 <div key={item.tajuk} className="glass-card" style={{
                   padding: '20px 16px', textAlign: 'center',
                   borderColor: i === 0 ? 'rgba(245,158,11,0.3)' : 'var(--border)',
@@ -264,7 +264,7 @@ export default function RankingPage() {
                   return (
                     <tr key={item.tajuk}>
                       <td style={{ textAlign: 'center', fontWeight: 700 }}>
-                        {i < 3 ? <span style={{ fontSize: 18 }}>{medals[i]}</span> : <span style={{ color: 'var(--muted)' }}>{i + 1}</span>}
+                        {i < 2 ? <span style={{ fontSize: 18 }}>{medals[i]}</span> : <span style={{ color: 'var(--muted)' }}>{i + 1}</span>}
                       </td>
                       <td style={{ fontWeight: 500 }}>{item.tajuk}</td>
                       <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--primary)' }}>
