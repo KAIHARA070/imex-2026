@@ -48,6 +48,8 @@ export const PROJECT_LIST: string[] = [
   "Stripe line machine",
   "E-trolley go",
   "FOOD DRYER",
+  "TROLLEYBIKE",
+  "MESIN RUMPUT SOLAR",
 ];
 
 export const IMEX_SCHEMA: {
