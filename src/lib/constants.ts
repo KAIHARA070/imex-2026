@@ -45,6 +45,8 @@ export const PROJECT_LIST: string[] = [
   "TVET MARA BESUT ROOM BOOKING SYSTEM",
   "CLOUD-BASED BARCODE SCANNER",
   "CLOUD PUZZLE QUEST",
+  "Stripe line machine",
+  "E-trolley go",
 ];
 
 export const IMEX_SCHEMA: {
