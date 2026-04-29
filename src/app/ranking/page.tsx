@@ -1,8 +1,8 @@
 'use client';
 import { useImexData } from '@/hooks/useImexData';
-import { RankingItem } from '@/lib/types';
+import { RankingItem, ImexRecord } from '@/lib/types';
 import { MAX_SCORES } from '@/lib/constants';
-import { Trophy, Medal } from 'lucide-react';
+import { Trophy, Medal, Printer } from 'lucide-react';
 
 export default function RankingPage() {
   const { data: allData = [], isLoading } = useImexData();
@@ -42,6 +42,112 @@ export default function RankingPage() {
     printWindow.focus();
     printWindow.print();
   };
+
+  const printGroupDetails = (tajuk: string) => {
+    const groupData = allData.filter(d => d.tajuk_projek === tajuk);
+    if (groupData.length === 0) return;
+
+    const getPanelData = (panelNameFragment: string) => groupData.find(d => d.panel.includes(panelNameFragment));
+    
+    const p1 = getPanelData('1.');
+    const p2 = getPanelData('2.');
+    const p3 = getPanelData('3.');
+
+    const panels = [p1, p2, p3];
+    const getVal = (p: ImexRecord | undefined, key: keyof ImexRecord) => p ? p[key] as number : '-';
+
+    const calcAvg = (key: keyof ImexRecord) => {
+      const valid = panels.filter(p => p !== undefined);
+      if (valid.length === 0) return '-';
+      const sum = valid.reduce((acc, p) => acc + ((p as any)[key] || 0), 0);
+      return (sum / valid.length).toFixed(1);
+    };
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Laporan Penilaian - ${tajuk}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+          h2 { text-align: center; margin-bottom: 5px; }
+          h3 { text-align: center; margin-top: 0; color: #666; font-weight: normal; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+          th { background-color: #f3f4f6; font-weight: bold; }
+          .left { text-align: left; }
+          .summary { margin-top: 30px; border: 1px solid #ddd; padding: 15px; background: #fafafa; }
+        </style>
+      </head>
+      <body>
+        <h2>Laporan Penilaian Projek IMEX TVETMARA Besut</h2>
+        <h3>Tajuk Projek: <strong>${tajuk}</strong></h3>
+        
+        <table>
+          <thead>
+            <tr>
+              <th class="left">Kriteria Penilaian</th>
+              <th>Panel 1<br/><small>(Ust Nor Hesham)</small></th>
+              <th>Panel 2<br/><small>(Pn Noor Azila)</small></th>
+              <th>Panel 3<br/><small>(Ust Muhd Aiman)</small></th>
+              <th>Purata</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="left">A. Persembahan (95)</td>
+              <td>${getVal(p1, 'jumlah_persembahan')}</td>
+              <td>${getVal(p2, 'jumlah_persembahan')}</td>
+              <td>${getVal(p3, 'jumlah_persembahan')}</td>
+              <td><strong>${calcAvg('jumlah_persembahan')}</strong></td>
+            </tr>
+            <tr>
+              <td class="left">B. Semangat Berpasukan (65)</td>
+              <td>${getVal(p1, 'jumlah_semangat')}</td>
+              <td>${getVal(p2, 'jumlah_semangat')}</td>
+              <td>${getVal(p3, 'jumlah_semangat')}</td>
+              <td><strong>${calcAvg('jumlah_semangat')}</strong></td>
+            </tr>
+            <tr>
+              <td class="left">C. Idea Boleh Dipasarkan (60)</td>
+              <td>${getVal(p1, 'jumlah_idea')}</td>
+              <td>${getVal(p2, 'jumlah_idea')}</td>
+              <td>${getVal(p3, 'jumlah_idea')}</td>
+              <td><strong>${calcAvg('jumlah_idea')}</strong></td>
+            </tr>
+            <tr style="background-color: #f9fafb; font-weight: bold; font-size: 1.1em;">
+              <td class="left">Jumlah Keseluruhan (220)</td>
+              <td>${getVal(p1, 'jumlah_keseluruhan')}</td>
+              <td>${getVal(p2, 'jumlah_keseluruhan')}</td>
+              <td>${getVal(p3, 'jumlah_keseluruhan')}</td>
+              <td>${calcAvg('jumlah_keseluruhan')}</td>
+            </tr>
+            <tr style="background-color: #f3f4f6; font-weight: bold; font-size: 1.1em;">
+              <td class="left">Peratusan (%)</td>
+              <td>${p1 ? p1.peratus + '%' : '-'}</td>
+              <td>${p2 ? p2.peratus + '%' : '-'}</td>
+              <td>${p3 ? p3.peratus + '%' : '-'}</td>
+              <td>${calcAvg('peratus')}%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="summary">
+          <p><strong>Bilangan Panel Menilai:</strong> ${panels.filter(p => p !== undefined).length} / 3</p>
+          <p><strong>Status:</strong> ${panels.filter(p => p !== undefined).length === 3 ? 'Selesai' : 'Belum Selesai'}</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  };
+
   return (
     <div className="page-content fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Print Button */}
@@ -100,6 +206,7 @@ export default function RankingPage() {
                   <th style={{ textAlign: 'center' }}>Peratusan</th>
                   <th style={{ textAlign: 'center' }}>Panel</th>
                   <th style={{ minWidth: 120 }}>Prestasi</th>
+                  <th style={{ textAlign: 'center', width: 60 }} className="no-print">Cetak</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,6 +233,11 @@ export default function RankingPage() {
                             <div className="progress-fill" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
+                      </td>
+                      <td style={{ textAlign: 'center' }} className="no-print">
+                        <button onClick={() => printGroupDetails(item.tajuk)} className="btn-ghost" style={{ padding: '6px' }} title="Cetak Laporan">
+                          <Printer size={16} />
+                        </button>
                       </td>
                     </tr>
                   );
