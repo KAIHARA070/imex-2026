@@ -47,6 +47,7 @@ export const PROJECT_LIST: string[] = [
   "CLOUD PUZZLE QUEST",
   "Stripe line machine",
   "E-trolley go",
+  "FOOD DRYER",
 ];
 
 export const IMEX_SCHEMA: {
