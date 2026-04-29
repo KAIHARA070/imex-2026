@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useImexData } from '@/hooks/useImexData';
 import { RankingItem, ImexRecord } from '@/lib/types';
 import { MAX_SCORES } from '@/lib/constants';
@@ -6,18 +7,42 @@ import { Trophy, Medal, Printer } from 'lucide-react';
 
 export default function RankingPage() {
   const { data: allData = [], isLoading } = useImexData({ refetchInterval: 5000 });
+  const [activeTab, setActiveTab] = useState<'keseluruhan' | 'persembahan' | 'semangat' | 'idea'>('keseluruhan');
 
-  const groupMap: Record<string, { tajuk: string; totalMarkah: number; count: number }> = {};
+  const groupMap: Record<string, { tajuk: string; markahKeseluruhan: number; markahPersembahan: number; markahSemangat: number; markahIdea: number; count: number }> = {};
   for (const item of allData) {
     const key = (item.tajuk_projek || '').toUpperCase().trim();
     if (!key) continue;
-    if (!groupMap[key]) groupMap[key] = { tajuk: item.tajuk_projek, totalMarkah: 0, count: 0 };
-    groupMap[key].totalMarkah += item.jumlah_keseluruhan || 0;
+    if (!groupMap[key]) groupMap[key] = { tajuk: item.tajuk_projek, markahKeseluruhan: 0, markahPersembahan: 0, markahSemangat: 0, markahIdea: 0, count: 0 };
+    groupMap[key].markahKeseluruhan += item.jumlah_keseluruhan || 0;
+    groupMap[key].markahPersembahan += item.jumlah_persembahan || 0;
+    groupMap[key].markahSemangat += item.jumlah_semangat || 0;
+    groupMap[key].markahIdea += item.jumlah_idea || 0;
     groupMap[key].count += 1;
   }
 
+  const getActiveTabMarkah = (g: typeof groupMap[string]) => {
+    switch (activeTab) {
+      case 'persembahan': return g.markahPersembahan;
+      case 'semangat': return g.markahSemangat;
+      case 'idea': return g.markahIdea;
+      default: return g.markahKeseluruhan;
+    }
+  };
+
+  const getActiveTabMaxScore = () => {
+    switch (activeTab) {
+      case 'persembahan': return MAX_SCORES.persembahan;
+      case 'semangat': return MAX_SCORES.semangat;
+      case 'idea': return MAX_SCORES.idea;
+      default: return MAX_SCORES.keseluruhan;
+    }
+  };
+
+  const activeMaxScore = getActiveTabMaxScore();
+
   const ranking: RankingItem[] = Object.values(groupMap)
-    .map(g => ({ tajuk: g.tajuk, purata: g.totalMarkah / g.count, jumlah_panel: g.count }))
+    .map(g => ({ tajuk: g.tajuk, purata: getActiveTabMarkah(g) / g.count, jumlah_panel: g.count }))
     .sort((a, b) => b.purata - a.purata);
 
   const medals = ['🥇', '🥈', '🥉'];
@@ -175,6 +200,30 @@ export default function RankingPage() {
         </div>
       ) : (
         <>
+          {/* Tabs */}
+          <div className="tabs-container no-print" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
+            {[
+              { id: 'keseluruhan', label: 'Keseluruhan' },
+              { id: 'persembahan', label: 'A. Persembahan' },
+              { id: 'semangat', label: 'B. Semangat Berpasukan' },
+              { id: 'idea', label: 'C. Idea Boleh Dipasarkan' }
+            ].map(tab => (
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id as any)}
+                className={activeTab === tab.id ? 'btn-primary' : 'btn-ghost'}
+                style={{ 
+                  padding: '8px 16px', 
+                  borderRadius: 8, 
+                  fontSize: 13, 
+                  border: activeTab !== tab.id ? '1px solid var(--border)' : 'none',
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           {/* Top 3 Podium */}
           {ranking.length >= 1 && (
             <div style={{ display: 'grid', gridTemplateColumns: ranking.length >= 3 ? 'repeat(3, 1fr)' : `repeat(${ranking.length}, 1fr)`, gap: 12 }}>
@@ -188,7 +237,7 @@ export default function RankingPage() {
                   <div style={{ fontSize: 32, marginBottom: 8 }}>{medals[i]}</div>
                   <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', marginBottom: 6, lineHeight: 1.4 }}>{item.tajuk}</p>
                   <p style={{ fontSize: 22, fontWeight: 800, color: medalColors[i] }}>{item.purata.toFixed(1)}</p>
-                  <p style={{ fontSize: 11, color: 'var(--muted)' }}>/ {MAX_SCORES.keseluruhan}</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)' }}>/ {activeMaxScore}</p>
                   <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6 }}>{item.jumlah_panel} panel dinilai</p>
                 </div>
               ))}
@@ -211,7 +260,7 @@ export default function RankingPage() {
               </thead>
               <tbody>
                 {ranking.map((item, i) => {
-                  const pct = (item.purata / MAX_SCORES.keseluruhan) * 100;
+                  const pct = (item.purata / activeMaxScore) * 100;
                   return (
                     <tr key={item.tajuk}>
                       <td style={{ textAlign: 'center', fontWeight: 700 }}>
