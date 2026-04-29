@@ -11,12 +11,13 @@ async function fetchImex(): Promise<ImexRecord[]> {
   return json.data;
 }
 
-export function useImexData() {
+export function useImexData(options?: { refetchInterval?: number }) {
   return useQuery({
     queryKey: ['imex'],
     queryFn: fetchImex,
     staleTime: 30_000,        // 30 saat cache
     refetchOnWindowFocus: true,
+    refetchInterval: options?.refetchInterval,
   });
 }
 

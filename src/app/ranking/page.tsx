@@ -5,7 +5,7 @@ import { MAX_SCORES } from '@/lib/constants';
 import { Trophy, Medal, Printer } from 'lucide-react';
 
 export default function RankingPage() {
-  const { data: allData = [], isLoading } = useImexData();
+  const { data: allData = [], isLoading } = useImexData({ refetchInterval: 5000 });
 
   const groupMap: Record<string, { tajuk: string; totalMarkah: number; count: number }> = {};
   for (const item of allData) {
